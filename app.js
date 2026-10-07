@@ -19,7 +19,7 @@ function formatInput(el){const n=parseMoney(el.value);el.value=n?n.toLocaleStrin
 $$('input[inputmode="numeric"]').forEach(el=>{el.addEventListener('blur',()=>formatInput(el));el.addEventListener('focus',()=>{const n=parseMoney(el.value);el.value=n||''})});
 function val(id){return parseMoney($(id).value)}
 function radio(name){return document.querySelector('input[name="'+name+'"]:checked')?.value}
-function showPanel(n){$('.panel').forEach(x=>x.classList.toggle('is-active',x.dataset.panel==n));$('.step').forEach(x=>x.classList.toggle('is-active',x.dataset.goto==n));window.scrollTo({top:0,behavior:'smooth'});setTimeout(notifyParentHeight,80)}
+function showPanel(n){$$('.panel').forEach(x=>x.classList.toggle('is-active',x.dataset.panel==n));$$('.step').forEach(x=>x.classList.toggle('is-active',x.dataset.goto==n));window.scrollTo({top:0,behavior:'smooth'});setTimeout(notifyParentHeight,80)}
 $$('.next').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.next)));$$('.back').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.back)));$$('.step').forEach(b=>b.addEventListener('click',()=>{if(+b.dataset.goto<4)showPanel(b.dataset.goto)}));
 $('#considerKft').addEventListener('change',e=>$('#kftOptions').style.display=e.target.checked?'block':'none');
 function syncRevenue(){const total=val('#revenue'),p=val('#privateRevenue'),k=val('#payerRevenue'),d=p+k-total;const box=$('#revenueCheck');if(d===0){box.className='statusbox ok';box.textContent='✓ Összesen: '+fmt(total)+' – megegyezik az 1. lépésben megadott bevétellel.'}else{box.className='statusbox bad';box.textContent='! A két rész összege '+fmt(p+k)+', ami '+fmt(Math.abs(d))+' eltérés az éves bevételhez képest.'}}
