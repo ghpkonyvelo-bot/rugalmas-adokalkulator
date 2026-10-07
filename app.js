@@ -14,16 +14,38 @@ const PARAMS={
 };
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const fmt=n=>Math.round(Number(n)||0).toLocaleString('hu-HU')+' Ft';
-const parseMoney=v=>Number(String(v??'').replace(/[^0-9-]/g,''))||0;
-function formatInput(el){const n=parseMoney(el.value);el.value=n?n.toLocaleString('hu-HU'):''}
+const parseMoney=v=>Math.max(0,Number(String(v??'').replace(/[^0-9]/g,''))||0);
+function formatInput(el){const n=parseMoney(el.value);el.value=n.toLocaleString('hu-HU')}
 $$('input[inputmode="numeric"]').forEach(el=>{el.addEventListener('blur',()=>formatInput(el));el.addEventListener('focus',()=>{const n=parseMoney(el.value);el.value=n||''})});
 function val(id){return parseMoney($(id).value)}
 function radio(name){return document.querySelector('input[name="'+name+'"]:checked')?.value}
 function showPanel(n){$$('.panel').forEach(x=>x.classList.toggle('is-active',x.dataset.panel==n));$$('.step').forEach(x=>x.classList.toggle('is-active',x.dataset.goto==n));window.scrollTo({top:0,behavior:'smooth'});setTimeout(notifyParentHeight,80)}
 $$('.next').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.next)));$$('.back').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.back)));$$('.step').forEach(b=>b.addEventListener('click',()=>{if(+b.dataset.goto<4)showPanel(b.dataset.goto)}));
 $('#considerKft').addEventListener('change',e=>$('#kftOptions').style.display=e.target.checked?'block':'none');
-function syncRevenue(){const total=val('#revenue'),p=val('#privateRevenue'),k=val('#payerRevenue'),d=p+k-total;const box=$('#revenueCheck');if(d===0){box.className='statusbox ok';box.textContent='✓ Összesen: '+fmt(total)+' – megegyezik az 1. lépésben megadott bevétellel.'}else{box.className='statusbox bad';box.textContent='! A két rész összege '+fmt(p+k)+', ami '+fmt(Math.abs(d))+' eltérés az éves bevételhez képest.'}}
-['#revenue','#privateRevenue','#payerRevenue'].forEach(s=>$(s).addEventListener('blur',syncRevenue));syncRevenue();
+function syncRevenue(){
+ const total=val('#revenue');
+ let payer=val('#payerRevenue');
+ if(payer>total){
+   payer=total;
+   $('#payerRevenue').value=payer.toLocaleString('hu-HU');
+ }
+ const privatePart=Math.max(0,total-payer);
+ $('#privateRevenue').value=privatePart.toLocaleString('hu-HU');
+ let largest=val('#largestPayer');
+ if(largest>payer){
+   largest=payer;
+   $('#largestPayer').value=largest.toLocaleString('hu-HU');
+ }
+ const box=$('#revenueCheck');
+ box.className='statusbox ok';
+ box.innerHTML='✓ Éves bevétel: <b>'+fmt(total)+'</b> · ebből kifizetőktől: <b>'+fmt(payer)+'</b> · magánszemélyektől automatikusan: <b>'+fmt(privatePart)+'</b>.';
+}
+['#revenue','#payerRevenue','#largestPayer'].forEach(s=>{
+ $(s).addEventListener('input',syncRevenue);
+ $(s).addEventListener('blur',()=>{formatInput($(s));syncRevenue()});
+});
+syncRevenue();
+
 function hipaSimpleBase(revenue){for(const [limit,base] of PARAMS.hipa.simpleBands)if(revenue<=limit)return base;return null}
 function hipaSimple(revenue,rate){const b=hipaSimpleBase(revenue);return b===null?null:b*rate}
 function lowerBound(status,minWage){return status==='main'?minWage*12:0}
@@ -93,14 +115,16 @@ function kivaTax(a){
  return {name:'KIVA-s Kft.',eligible:true,total,parts:{salary,kiva,hipa,dividend,dividendSzja,dividendSzocho},ownerNet:ownerNetSalary+ownerNetDividend,retained,totalValue:ownerNetSalary+ownerNetDividend+retained,hipaMethod:hSimple!==null&&hSimple<=hKiva?'egyszerűsített kisvállalkozói HIPA':'KIVA-adóalap 120%-a szerinti HIPA'}
 }
 function getData(){
- const revenue=val('#revenue'), privateRevenue=val('#privateRevenue'), payerRevenue=val('#payerRevenue');
- return {revenue,privateRevenue,payerRevenue,largestPayer:val('#largestPayer'),status:radio('status'),formerEmployer:radio('formerEmployer'),rental:radio('rental'),expenseRatio:+$('#expenseRatio').value,realCosts:val('#realCosts'),considerKft:$('#considerKft').checked,profitPolicy:+$('#profitPolicy').value,ownerSalary:val('#ownerSalary'),minWage:val('#minWage')||374600,hipaRate:+$('#hipaRate').value}
+ const revenue=val('#revenue');
+ const payerRevenue=Math.min(val('#payerRevenue'),revenue);
+ const privateRevenue=Math.max(0,revenue-payerRevenue);
+ const largestPayer=Math.min(val('#largestPayer'),payerRevenue);
+ return {revenue,privateRevenue,payerRevenue,largestPayer,status:radio('status'),formerEmployer:radio('formerEmployer'),rental:radio('rental'),expenseRatio:+$('#expenseRatio').value,realCosts:val('#realCosts'),considerKft:$('#considerKft').checked,profitPolicy:+$('#profitPolicy').value,ownerSalary:val('#ownerSalary'),minWage:val('#minWage')||374600,hipaRate:+$('#hipaRate').value}
 }
 function labelDifference(d){if(d<=150000)return ['Közel azonos','mid'];if(d<=500000)return ['Mérlegelendő','mid'];return ['Drágább','bad']}
 function calculate(){
  const a=getData();
- if(!a.revenue){alert('Add meg a várható éves bevételt.');showPanel(1);return}
- if(a.privateRevenue+a.payerRevenue!==a.revenue){alert('A magánszemély és kifizetői bevétel összege egyezzen meg az éves bevétellel.');showPanel(2);return}
+ if(!a.revenue){showPanel(1);$('#revenue').focus();return}
  const items=[kataTax(a),flatTax(a),entrepreneurTax(a),kivaTax(a)].filter(x=>!x.hidden);
  const eligible=items.filter(x=>x.eligible&&Number.isFinite(x.total));
  const best=eligible.reduce((m,x)=>!m||x.total<m.total?x:m,null);
