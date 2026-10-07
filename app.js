@@ -25,7 +25,7 @@ $$('input[inputmode="numeric"]').forEach(el=>{el.addEventListener('blur',()=>for
 function val(id){return parseMoney($(id).value)}
 function radio(name){return document.querySelector('input[name="'+name+'"]:checked')?.value}
 function showPanel(n){$$('.panel').forEach(x=>x.classList.toggle('is-active',x.dataset.panel==n));$$('.step').forEach(x=>x.classList.toggle('is-active',x.dataset.goto==n));window.scrollTo({top:0,behavior:'smooth'});setTimeout(notifyParentHeight,80)}
-$('.next').forEach(b=>b.addEventListener('click',()=>{
+$$('.next').forEach(b=>b.addEventListener('click',()=>{
   if(b.dataset.next==='2'&&!calculatorStartedTracked){
     calculatorStartedTracked=true;
     trackCalculatorEvent('calculator_started');
