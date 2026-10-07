@@ -13,9 +13,23 @@
   var frame=document.getElementById('rk-adokalkulator');
   window.addEventListener('message',function(event){
     if(event.origin!=='https://ghpkonyvelo-bot.github.io') return;
-    if(!event.data||event.data.type!=='rugalmas-adokalkulator-height') return;
-    var h=Number(event.data.height)||0;
-    if(h>400&&h<5000) frame.style.height=(h+16)+'px';
+    if(!event.data) return;
+
+    if(event.data.type==='rugalmas-adokalkulator-height'){
+      var h=Number(event.data.height)||0;
+      if(h>400&&h<5000) frame.style.height=(h+16)+'px';
+      return;
+    }
+
+    if(event.data.type==='rugalmas-adokalkulator-event'){
+      var allowed=['calculator_started','calculator_completed','contact_clicked'];
+      if(allowed.indexOf(event.data.event)===-1) return;
+      window.dataLayer=window.dataLayer||[];
+      window.dataLayer.push({
+        event:event.data.event,
+        calculator_name:'adokalkulator_2027'
+      });
+    }
   });
 })();
 </script>
