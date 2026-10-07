@@ -4,6 +4,11 @@ function notifyParentHeight(){
   if(!EMBED_MODE || window.parent===window) return;
   window.parent.postMessage({type:'rugalmas-adokalkulator-height',height:document.documentElement.scrollHeight},'*');
 }
+function trackCalculatorEvent(eventName){
+  if(!EMBED_MODE || window.parent===window) return;
+  window.parent.postMessage({type:'rugalmas-adokalkulator-event',event:eventName},'*');
+}
+let calculatorStartedTracked=false;
 const PARAMS={
   kata:{threshold:22000000,rateExcess:.40,payerRate:.15,monthlyMain:100000,monthlyOther:50000},
   flat:{generalRatio:.50,tb:.185,szocho:.13,szja:.15},
@@ -20,7 +25,13 @@ $$('input[inputmode="numeric"]').forEach(el=>{el.addEventListener('blur',()=>for
 function val(id){return parseMoney($(id).value)}
 function radio(name){return document.querySelector('input[name="'+name+'"]:checked')?.value}
 function showPanel(n){$$('.panel').forEach(x=>x.classList.toggle('is-active',x.dataset.panel==n));$$('.step').forEach(x=>x.classList.toggle('is-active',x.dataset.goto==n));window.scrollTo({top:0,behavior:'smooth'});setTimeout(notifyParentHeight,80)}
-$$('.next').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.next)));$$('.back').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.back)));$$('.step').forEach(b=>b.addEventListener('click',()=>{if(+b.dataset.goto<4)showPanel(b.dataset.goto)}));
+$('.next').forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.next==='2'&&!calculatorStartedTracked){
+    calculatorStartedTracked=true;
+    trackCalculatorEvent('calculator_started');
+  }
+  showPanel(b.dataset.next);
+}));$$('.back').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.back)));$$('.step').forEach(b=>b.addEventListener('click',()=>{if(+b.dataset.goto<4)showPanel(b.dataset.goto)}));
 $('#considerKft').addEventListener('change',e=>$('#kftOptions').style.display=e.target.checked?'block':'none');
 function syncRevenue(){
  const total=val('#revenue');
@@ -141,9 +152,15 @@ function calculate(){
  $('#reasoning').innerHTML='<h3>Miért ezt látod?</h3><ul>'+reasons.map(r=>'<li>'+r+'</li>').join('')+'</ul>';
  const kft=items.find(x=>x.name==='KIVA-s Kft.');
  $('#kftDetail').innerHTML=kft&&kft.eligible?'<h3>KIVA-s Kft. – plusz nézőpont</h3><p>A tulajdonoshoz becslés szerint <b>'+fmt(kft.ownerNet)+'</b> nettó pénz kerül, és <b>'+fmt(kft.retained)+'</b> marad a cégben. A kettő együtt: <b>'+fmt(kft.totalValue)+'</b>.</p><p>A HIPA-becslésnél a kedvezőbb számított módszer: <b>'+kft.hipaMethod+'</b>.</p>':'';
+ trackCalculatorEvent('calculator_completed');
  showPanel(4)
 }
-$('#calculate').addEventListener('click',calculate);$('#restart').addEventListener('click',()=>{showPanel(1)});
+$('#calculate').addEventListener('click',calculate);
+$('#restart').addEventListener('click',()=>{showPanel(1)});
+const contactLink=document.querySelector('.cta a');
+if(contactLink){
+  contactLink.addEventListener('click',()=>trackCalculatorEvent('contact_clicked'));
+}
 
 window.addEventListener('load',notifyParentHeight);
 if('ResizeObserver' in window){new ResizeObserver(()=>notifyParentHeight()).observe(document.body)}
