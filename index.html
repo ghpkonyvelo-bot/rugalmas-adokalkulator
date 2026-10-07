@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="2027-es adózási kalkulátor: ÚJ KATA, átalányadó, vállalkozói SZJA és KIVA-s Kft. összehasonlítása.">
+  <title>Adókalkulátor 2027 | Rugalmas Könyvelés</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="shell">
+  <header class="hero">
+    <span class="eyebrow">Rugalmas Könyvelés és Tanácsadás</span>
+    <h1>Melyik adózási forma éri meg neked 2027-ben?</h1>
+    <p>KATA, átalányadó, vállalkozói SZJA vagy KIVA-s Kft.? Néhány adat alapján összehasonlítjuk a várható éves közterheket.</p>
+    <div class="notice">A kalkulátor tájékoztató jellegű. Az ÚJ KATA 2027 jelenleg tervezeti szabályokon alapul, ezért a végleges törvény megjelenésekor a paramétereket frissíteni kell.</div>
+  </header>
+
+  <section class="calculator" aria-label="Adókalkulátor">
+    <nav class="steps" aria-label="Lépések">
+      <button class="step is-active" data-goto="1"><span>1</span><small>Rólad</small></button>
+      <button class="step" data-goto="2"><span>2</span><small>Bevételeid</small></button>
+      <button class="step" data-goto="3"><span>3</span><small>Tevékenység</small></button>
+      <button class="step" data-goto="4"><span>4</span><small>Eredmény</small></button>
+    </nav>
+
+    <form id="taxForm" novalidate>
+      <section class="panel is-active" data-panel="1">
+        <div class="panel-head"><div><b>1 / 4</b><h2>Rólad</h2></div><p>Pár alapadat kell ahhoz, hogy csak a számodra releváns lehetőségeket vizsgáljuk.</p></div>
+
+        <label class="field">
+          <span>Várható éves bevételed 2027-ben</span>
+          <div class="money-wrap"><input id="revenue" inputmode="numeric" autocomplete="off" value="18 000 000"><b>Ft</b></div>
+        </label>
+
+        <fieldset class="field">
+          <legend>Milyen jogállásban vállalkozol?</legend>
+          <label><input type="radio" name="status" value="main" checked> Főállású vállalkozó</label>
+          <label><input type="radio" name="status" value="side"> Heti 36 órát elérő munkaviszony mellett</label>
+          <label><input type="radio" name="status" value="retired"> Saját jogú nyugdíjasként</label>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend>2027-ben már működő vagy új vállalkozás leszel?</legend>
+          <label><input type="radio" name="existing" value="existing" checked> Már működő vállalkozás</label>
+          <label><input type="radio" name="existing" value="new"> Új vállalkozás</label>
+        </fieldset>
+
+        <label class="field">
+          <span>Jelenleg hogyan adózol?</span>
+          <select id="currentTax">
+            <option value="flat">Átalányadó</option>
+            <option value="entrepreneur">Vállalkozói SZJA</option>
+            <option value="kata">KATA</option>
+            <option value="none">Még nincs vállalkozásom</option>
+          </select>
+        </label>
+
+        <div class="actions"><span></span><button type="button" class="primary next" data-next="2">Tovább →</button></div>
+      </section>
+
+      <section class="panel" data-panel="2">
+        <div class="panel-head"><div><b>2 / 4</b><h2>Bevételeid</h2></div><p>Kinek és mennyiért számlázol? Ez az ÚJ KATA szempontjából különösen fontos.</p></div>
+
+        <div class="split">
+          <label class="field"><span>Magánszemélyektől várható bevétel</span><div class="money-wrap"><input id="privateRevenue" inputmode="numeric" value="10 000 000"><b>Ft</b></div></label>
+          <label class="field"><span>Cégektől / EV-ktől / egyéb kifizetőktől</span><div class="money-wrap"><input id="payerRevenue" inputmode="numeric" value="8 000 000"><b>Ft</b></div></label>
+        </div>
+        <div id="revenueCheck" class="statusbox ok"></div>
+
+        <label class="field"><span>Egyetlen cégtől vagy kapcsolt cégektől várható legnagyobb bevétel</span><div class="money-wrap"><input id="largestPayer" inputmode="numeric" value="6 000 000"><b>Ft</b></div></label>
+
+        <fieldset class="field">
+          <legend>Számlázol jelenlegi vagy az elmúlt 24 hónapban volt munkáltatódnak?</legend>
+          <label><input type="radio" name="formerEmployer" value="yes"> Igen</label>
+          <label><input type="radio" name="formerEmployer" value="no" checked> Nem</label>
+        </fieldset>
+
+        <div class="actions"><button type="button" class="ghost back" data-back="1">← Vissza</button><button type="button" class="primary next" data-next="3">Tovább →</button></div>
+      </section>
+
+      <section class="panel" data-panel="3">
+        <div class="panel-head"><div><b>3 / 4</b><h2>Tevékenység és költségek</h2></div><p>Add meg, mivel foglalkozol és mekkora költséggel tervezel.</p></div>
+
+        <label class="field">
+          <span>Átalányadó költséghányada</span>
+          <select id="expenseRatio">
+            <option value="0.50">50% – általános (2027)</option>
+            <option value="0.80">80% – jogosító tevékenység</option>
+            <option value="0.90">90% – kizárólag kiskereskedelem / jogosító tevékenység</option>
+          </select>
+          <small>Ha nem tudod biztosan, hagyd 50%-on. A tevékenységi jogosultságot könyvelővel érdemes ellenőrizni.</small>
+        </label>
+
+        <label class="field"><span>Becsült tényleges vállalkozási költséged évente</span><div class="money-wrap"><input id="realCosts" inputmode="numeric" value="2 500 000"><b>Ft</b></div></label>
+
+        <fieldset class="field">
+          <legend>Származik bevételed ingatlan-bérbeadásból (TEÁOR 68.20)?</legend>
+          <label><input type="radio" name="rental" value="yes"> Igen</label>
+          <label><input type="radio" name="rental" value="no" checked> Nem</label>
+        </fieldset>
+
+        <div class="kft-card">
+          <label class="toggle"><input type="checkbox" id="considerKft" checked><span>Megfontolnád Kft. működtetését is, ha kedvezőbb lenne?</span></label>
+          <div id="kftOptions">
+            <label class="field"><span>A nyereséget várhatóan</span>
+              <select id="profitPolicy">
+                <option value="0.90">szinte teljesen kivenném</option>
+                <option value="0.50" selected>részben kivenném, részben a cégben hagynám</option>
+                <option value="0.20">nagyrészt a cégben hagynám</option>
+              </select>
+            </label>
+            <details>
+              <summary>Haladó Kft.-beállítások</summary>
+              <div class="advanced-grid">
+                <label class="field"><span>Éves bruttó tagi / ügyvezetői díjazás</span><div class="money-wrap"><input id="ownerSalary" inputmode="numeric" value="0"><b>Ft</b></div><small>0 esetén a kalkulátor a jogállás alapján becsült minimumot használja.</small></label>
+                <label class="field"><span>HIPA-kulcs</span><select id="hipaRate"><option value="0.02" selected>2,0%</option><option value="0.018">1,8%</option><option value="0.015">1,5%</option><option value="0.01">1,0%</option><option value="0">0%</option></select></label>
+                <label class="field"><span>2027 havi minimálbér – tervezési paraméter</span><div class="money-wrap"><input id="minWage" inputmode="numeric" value="374 600"><b>Ft</b></div></label>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="actions"><button type="button" class="ghost back" data-back="2">← Vissza</button><button type="button" class="primary" id="calculate">Eredmény megjelenítése →</button></div>
+      </section>
+
+      <section class="panel" data-panel="4">
+        <div class="panel-head"><div><b>4 / 4</b><h2>Eredmény</h2></div><p>A megadott adatok alapján készült becslés.</p></div>
+
+        <div id="winner" class="winner"></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Adózási forma</th><th>Becsült éves közteher</th><th>Különbség</th><th>Értékelés</th></tr></thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+        </div>
+
+        <div id="reasoning" class="reasoning"></div>
+        <div id="kftDetail" class="kft-detail"></div>
+
+        <div class="notice compact">A számítás nem kezeli az összes egyedi kedvezményt, családi adó- és járulékkedvezményt, szünetelést, évközi kezdést, speciális HIPA-korrekciókat és valamennyi KIVA-adóalap módosító tételt. Döntés előtt egyedi ellenőrzés szükséges.</div>
+
+        <div class="cta">
+          <div><span class="eyebrow">Személyes ellenőrzés</span><h3>Szeretnéd biztosan tudni, hogy neked melyik a legjobb?</h3><p>A kalkulátor jó előszűrő, de a végleges választást érdemes a konkrét tevékenységgel és szerződésekkel együtt átnézni.</p></div>
+          <a class="primary linkbtn" href="https://www.rugalmaskonyveles.hu/kapcsolat/" target="_blank" rel="noopener">Kapcsolatfelvétel →</a>
+        </div>
+
+        <div class="actions"><button type="button" class="ghost back" data-back="3">← Adatok módosítása</button><button type="button" class="primary" id="restart">Új számítás</button></div>
+      </section>
+    </form>
+  </section>
+
+  <section class="sources">
+    <h3>Számítási alapok és források</h3>
+    <p>A paraméterek külön, a JavaScript elején találhatók, így jogszabályváltozáskor gyorsan frissíthetők.</p>
+    <ul>
+      <li><a href="https://kormany.hu/dokumentumtar/tarsadalmi-egyeztetes-a-kisadozo-egyeni-vallalkozok-teteles-adojarol-szolo-torvenyjavaslatrol" target="_blank" rel="noopener">ÚJ KATA 2027 – társadalmi egyeztetés</a></li>
+      <li><a href="https://nav.gov.hu/ado/szja/Kedvezo_valtozasok_az_atalanyadozasban" target="_blank" rel="noopener">NAV – átalányadózás 2026–2027 változásai</a></li>
+      <li><a href="https://nav.gov.hu/ado/kiva" target="_blank" rel="noopener">NAV – KIVA</a></li>
+    </ul>
+  </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
