@@ -63,12 +63,12 @@
         <div class="panel-head"><div><b>2 / 4</b><h2>Bevételeid</h2></div><p>Kinek és mennyiért számlázol? Ez az ÚJ KATA szempontjából különösen fontos.</p></div>
 
         <div class="split">
-          <label class="field"><span>Magánszemélyektől várható bevétel</span><div class="money-wrap"><input id="privateRevenue" inputmode="numeric" value="10 000 000"><b>Ft</b></div></label>
-          <label class="field"><span>Cégektől / EV-ktől / egyéb kifizetőktől</span><div class="money-wrap"><input id="payerRevenue" inputmode="numeric" value="8 000 000"><b>Ft</b></div></label>
+          <label class="field"><span>Cégektől / EV-ktől / egyéb kifizetőktől várható bevétel</span><div class="money-wrap"><input id="payerRevenue" inputmode="numeric" value="8 000 000"><b>Ft</b></div><small>Ezt az összeget add meg. A magánszemélyektől származó részt automatikusan kiszámoljuk.</small></label>
+          <label class="field"><span>Magánszemélyektől várható bevétel</span><div class="money-wrap readonly"><input id="privateRevenue" inputmode="numeric" value="10 000 000" readonly tabindex="-1" aria-readonly="true"><b>Ft</b></div><small>Automatikus érték: éves bevétel − kifizetői bevétel.</small></label>
         </div>
         <div id="revenueCheck" class="statusbox ok"></div>
 
-        <label class="field"><span>Egyetlen cégtől vagy kapcsolt cégektől várható legnagyobb bevétel</span><div class="money-wrap"><input id="largestPayer" inputmode="numeric" value="6 000 000"><b>Ft</b></div></label>
+        <label class="field"><span>Egyetlen cégtől vagy kapcsolt cégektől várható legnagyobb bevétel</span><div class="money-wrap"><input id="largestPayer" inputmode="numeric" value="6 000 000"><b>Ft</b></div><small>Nem lehet több, mint a teljes kifizetői bevétel. Ha többet írsz be, automatikusan korrigáljuk.</small></label>
 
         <fieldset class="field">
           <legend>Számlázol jelenlegi vagy az elmúlt 24 hónapban volt munkáltatódnak?</legend>
