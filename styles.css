@@ -3,3 +3,7 @@ body.embed-mode{background:#fff}
 body.embed-mode .shell{max-width:1080px;padding-top:8px;padding-bottom:8px}
 body.embed-mode .hero,body.embed-mode .sources{display:none}
 body.embed-mode .calculator{box-shadow:none;border-color:#e1e8ef}
+
+.money-wrap.readonly{background:#f1f5f8;border-color:#d8e1e8}
+.money-wrap.readonly input{background:#f1f5f8;color:#52687a;cursor:default}
+.money-wrap.readonly b{background:#e8eef3}
